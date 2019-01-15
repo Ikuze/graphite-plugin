@@ -30,6 +30,7 @@ import org.jenkinsci.plugins.graphiteIntegrator.metrics.AbstractMetric;
 import org.jenkinsci.plugins.graphiteIntegrator.metrics.BuildDurationMetric;
 import org.jenkinsci.plugins.graphiteIntegrator.metrics.BuildFailedMetric;
 import org.jenkinsci.plugins.graphiteIntegrator.metrics.BuildSuccessfulMetric;
+import org.jenkinsci.plugins.graphiteIntegrator.metrics.BuildResultMetric;
 import org.jenkinsci.plugins.graphiteIntegrator.metrics.CoberturaCodeCoverageMetric;
 import org.jenkinsci.plugins.graphiteIntegrator.metrics.FailTestsMetric;
 import org.jenkinsci.plugins.graphiteIntegrator.metrics.SkipTestsMetric;
@@ -116,10 +117,16 @@ public class ReportGraphite extends Step {
 
             List<Metric> coberturaMetrics = null;
             Metric metric = null;
-                    metric = this.getMetric(MetricsEnum.BUILD_DURATION.name() ,"");
-                    metricSender = new BuildDurationMetric(run, graphiteLogger.getLogger(), graphiteLogger, baseQueueName);
-                    metricSender.sendMetric(server, metric);
 
+            metric = this.getMetric(MetricsEnum.BUILD_DURATION.name() ,"");
+            metricSender = new BuildDurationMetric(run, graphiteLogger.getLogger(), graphiteLogger, baseQueueName);
+            metricSender.sendMetric(server, metric);
+
+            metric = this.getMetric("", run.getParent().getFullName());
+            metricSender = new BuildResultMetric(run, graphiteLogger.getLogger(), graphiteLogger, baseQueueName);
+            metricSender.sendMetric(server, metric);
+
+/*
                     metric = this.getMetric(MetricsEnum.BUILD_FAILED.name() ,"");
                     metricSender = new BuildFailedMetric(run, graphiteLogger.getLogger(), graphiteLogger, baseQueueName);
                     metricSender.sendMetric(server, metric);
@@ -127,7 +134,7 @@ public class ReportGraphite extends Step {
                     metric = this.getMetric(MetricsEnum.BUILD_SUCCESSFUL.name() ,"");
                     metricSender = new BuildSuccessfulMetric(run, graphiteLogger.getLogger(), graphiteLogger, baseQueueName);
                     metricSender.sendMetric(server, metric);
-
+*/
                 //if (isCoberturaMetric(metric)) {
                 //    if (!isCoberturaListInitialized(coberturaMetrics)) {
                 //        coberturaMetrics = new ArrayList<Metric>();
