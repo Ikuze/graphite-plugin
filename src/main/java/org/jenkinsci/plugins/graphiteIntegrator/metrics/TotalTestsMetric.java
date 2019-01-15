@@ -3,7 +3,7 @@
  */
 package org.jenkinsci.plugins.graphiteIntegrator.metrics;
 
-import hudson.model.AbstractBuild;
+import hudson.model.Run;
 import hudson.tasks.test.AbstractTestResultAction;
 
 import java.io.IOException;
@@ -22,12 +22,12 @@ public class TotalTestsMetric extends AbstractMetric {
 
 	/**
 	 * 
-	 * @param build
+	 * @param run
 	 * @param logger
 	 * @param graphiteLogger
 	 */
-	public TotalTestsMetric(AbstractBuild<?, ?> build, PrintStream logger, GraphiteLogger graphiteLogger, String baseQueueName) {
-		super(build, logger, graphiteLogger, baseQueueName);
+	public TotalTestsMetric(Run<?, ?> run, PrintStream logger, GraphiteLogger graphiteLogger, String baseQueueName) {
+		super(run, logger, graphiteLogger, baseQueueName);
 	}
 
 	/**
@@ -40,7 +40,7 @@ public class TotalTestsMetric extends AbstractMetric {
 	@Override
 	public void sendMetric(Server server, Metric... metric) throws UnknownHostException, IOException {
 
-		String metricToSend = Integer.toString(build.getAction(AbstractTestResultAction.class).getTotalCount());
+		String metricToSend = Integer.toString(run.getAction(AbstractTestResultAction.class).getTotalCount());
 
 		sendMetric(server, metric[0], metricToSend);
 	}

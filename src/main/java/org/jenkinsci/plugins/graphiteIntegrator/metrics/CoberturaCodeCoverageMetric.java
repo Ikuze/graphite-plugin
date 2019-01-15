@@ -3,6 +3,8 @@
  */
 package org.jenkinsci.plugins.graphiteIntegrator.metrics;
 
+import hudson.model.Run;
+import hudson.FilePath;
 import hudson.model.AbstractBuild;
 
 import java.io.File;
@@ -31,20 +33,37 @@ import utils.MetricsEnum;
  */
 public class CoberturaCodeCoverageMetric extends AbstractMetric {
 
+        
+        FilePath workspace = null;
 	/**
 	 * 
-	 * @param build
+	 * @param run
 	 * @param logger
 	 * @param graphiteLogger
 	 */
-	public CoberturaCodeCoverageMetric(AbstractBuild<?, ?> build, PrintStream logger, GraphiteLogger graphiteLogger, String baseQueueName) {
-		super(build, logger, graphiteLogger, baseQueueName);
+	public CoberturaCodeCoverageMetric(Run<?, ?> run, PrintStream logger, GraphiteLogger graphiteLogger, String baseQueueName) {
+		super(run, logger, graphiteLogger, baseQueueName);
 	}
+
+        public FilePath getWorkspace(){
+            if (this.workspace != null){
+                return this.workspace;
+            }
+            else if(this.run instanceof AbstractBuild){
+                return ((AbstractBuild)run).getWorkspace();
+            }
+            
+            return null;
+        }
+
+        public void setWorkspace(FilePath workspace){
+            this.workspace = workspace;
+        }
 
 	@Override
 	public void sendMetric(Server server, Metric... metrics) throws UnknownHostException, IOException {
 
-		File dataFile = new File(build.getWorkspace() + "/target/cobertura/cobertura.ser");
+		File dataFile = new File(this.getWorkspace() + "/target/cobertura/cobertura.ser");
 
 		ProjectData projectData = CoverageDataFileHandler.loadCoverageData(dataFile);
 

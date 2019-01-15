@@ -1,7 +1,7 @@
 package org.jenkinsci.plugins.graphiteIntegrator.metrics;
 
 import hudson.model.Result;
-import hudson.model.AbstractBuild;
+import hudson.model.Run;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -19,12 +19,12 @@ public class BuildFailedMetric extends AbstractMetric {
 
     /**
      * 
-     * @param build
+     * @param run
      * @param logger
      * @param graphiteLogger
      */
-    public BuildFailedMetric(AbstractBuild<?, ?> build, PrintStream logger, GraphiteLogger graphiteLogger, String baseQueueName) {
-        super(build, logger, graphiteLogger, baseQueueName);
+    public BuildFailedMetric(Run<?, ?> run, PrintStream logger, GraphiteLogger graphiteLogger, String baseQueueName) {
+        super(run, logger, graphiteLogger, baseQueueName);
     }
 
     /**
@@ -37,7 +37,7 @@ public class BuildFailedMetric extends AbstractMetric {
     @Override
     public void sendMetric(Server server, Metric... metric) throws UnknownHostException, IOException {
         
-        if(build.getResult().isWorseThan(Result.UNSTABLE)){
+        if(run.getResult() != null && run.getResult().isWorseThan(Result.UNSTABLE)){
             String metricToSend = String.valueOf(1);
             sendMetric(server, metric[0], metricToSend);
         }

@@ -3,7 +3,7 @@
  */
 package org.jenkinsci.plugins.graphiteIntegrator.metrics;
 
-import hudson.model.AbstractBuild;
+import hudson.model.Run;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.UnknownHostException;
@@ -19,12 +19,12 @@ public class BuildDurationMetric extends AbstractMetric {
 
 	/**
 	 * 
-	 * @param build
+	 * @param run
 	 * @param logger
 	 * @param graphiteLogger
 	 */
-	public BuildDurationMetric(AbstractBuild<?, ?> build, PrintStream logger, GraphiteLogger graphiteLogger, String baseQueueName) {
-		super(build, logger, graphiteLogger, baseQueueName);
+	public BuildDurationMetric(Run<?, ?> run, PrintStream logger, GraphiteLogger graphiteLogger, String baseQueueName) {
+		super(run, logger, graphiteLogger, baseQueueName);
 	}
 
 	/**
@@ -37,7 +37,7 @@ public class BuildDurationMetric extends AbstractMetric {
 	@Override
 	public void sendMetric(Server server, Metric... metric) throws UnknownHostException, IOException {
 
-		String metricToSend = String.valueOf((new Long(build.getDuration()).intValue() / 1000));
+		String metricToSend = String.valueOf((new Long(run.getDuration()).intValue() / 1000));
 
 		sendMetric(server, metric[0], metricToSend);
 	}

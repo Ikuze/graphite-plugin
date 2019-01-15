@@ -1,6 +1,6 @@
 package org.jenkinsci.plugins.graphiteIntegrator.metrics;
 
-import hudson.model.AbstractBuild;
+import hudson.model.Run;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -20,19 +20,19 @@ import utils.GraphiteValidator;
 public abstract class AbstractMetric {
 
 	protected GraphiteValidator validator = new GraphiteValidator();
-	protected final AbstractBuild<?, ?> build;
+	protected final Run<?, ?> run;
 	protected final PrintStream logger;
 	protected final GraphiteLogger graphiteLogger;
 	protected final String baseQueueName;
 
 	/**
 	 * 
-	 * @param build
+	 * @param run
 	 * @param logger
 	 * @param graphiteLogger
 	 */
-	public AbstractMetric(AbstractBuild<?, ?> build, PrintStream logger, GraphiteLogger graphiteLogger, String baseQueueName) {
-		this.build = build;
+	public AbstractMetric(Run<?, ?> run, PrintStream logger, GraphiteLogger graphiteLogger, String baseQueueName) {
+		this.run = run;
 		this.logger = logger;
 		this.graphiteLogger = graphiteLogger;
 		this.baseQueueName = baseQueueName;

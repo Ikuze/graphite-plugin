@@ -25,6 +25,10 @@ public class GraphiteLogger {
     public GraphiteLogger(PrintStream logger) {
         this.logger = logger;
     }
+
+    public PrintStream getLogger(){
+        return this.logger;
+    }
     
     
     /**
