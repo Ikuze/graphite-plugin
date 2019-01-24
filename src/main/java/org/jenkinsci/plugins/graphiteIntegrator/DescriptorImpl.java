@@ -15,12 +15,15 @@ import utils.MetricsEnum;
 
 import java.util.Iterator;
 
-/**
- * @author joachimrodrigues
- * 
- */
-public final class DescriptorImpl extends BuildStepDescriptor<Publisher> implements ModelObject {
+import jenkins.model.GlobalConfiguration;
 
+import hudson.Extension;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.annotation.Nonnull;
+
+@Extension public final class DescriptorImpl extends GlobalConfiguration  {
+        protected static final Logger LOGGER = Logger.getLogger(DescriptorImpl.class.getName());
 	
 	private final CopyOnWriteMap<String, Metric> metricsMap = new CopyOnWriteMap.Hash();
 
@@ -31,18 +34,21 @@ public final class DescriptorImpl extends BuildStepDescriptor<Publisher> impleme
 	
 	private String baseQueueName;
 
-	/**
-	 * The default constructor.
-	 */
+
+        public static @Nonnull DescriptorImpl get() {
+            DescriptorImpl instance = GlobalConfiguration.all().get(DescriptorImpl.class);
+            if (instance == null) { // TODO would be useful to have an ExtensionList.getOrFail
+                throw new IllegalStateException();
+            }
+            return instance;
+        }
+
 	public DescriptorImpl() {
-		super(GraphitePublisher.class);
+                LOGGER.log(Level.INFO, "DescriptorImmp constructed");
 		load();
 	}
 
 
-	/**
-	 * @return metrics
-	 */
 	public Metric[] getMetrics() {
 		metricsMap.clear();
 		MetricsEnum[] values = MetricsEnum.values();
@@ -77,6 +83,7 @@ public final class DescriptorImpl extends BuildStepDescriptor<Publisher> impleme
 	 */
 	@Override
 	public String getDisplayName() {
+                LOGGER.log(Level.INFO, "DescriptorImpl Showing display name");
 		return "Publish metrics to Graphite Server";
 	}
 
@@ -85,23 +92,23 @@ public final class DescriptorImpl extends BuildStepDescriptor<Publisher> impleme
 	 * 
 	 * @see hudson.tasks.BuildStepDescriptor#isApplicable(java.lang.Class)
 	 */
-	@Override
-	public boolean isApplicable(Class<? extends AbstractProject> jobType) {
-		return true;
-	}
+	//@Override
+	//public boolean isApplicable(Class<? extends AbstractProject> jobType) {
+	//	return true;
+	//}
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see hudson.model.Descriptor#newInstance(org.kohsuke.stapler.StaplerRequest, net.sf.json.JSONObject)
 	 */
-	@Override
-	public Publisher newInstance(StaplerRequest req, JSONObject formData) {
-		GraphitePublisher publisher = new GraphitePublisher();
-		req.bindParameters(publisher, "publisherBinding.");
-		publisher.getMetrics().addAll(req.bindParametersToList(Metric.class, "metricBinding."));
-		return publisher;
-	}
+//	@Override
+//	public Publisher newInstance(StaplerRequest req, JSONObject formData) {
+//		GraphitePublisher publisher = new GraphitePublisher();
+//		req.bindParameters(publisher, "publisherBinding.");
+//		publisher.getMetrics().addAll(req.bindParametersToList(Metric.class, "metricBinding."));
+//		return publisher;
+//	}
 
 	/*
 	 * (non-Javadoc)
@@ -125,6 +132,11 @@ public String getBaseQueueName(){
 	return validator;
 }
 
+   @Override
+    public String getGlobalConfigPage() {
+        LOGGER.log(Level.INFO, "returned config page {0}", getConfigPage());
+        return getConfigPage();
+    }
 
 public void setValidator(GraphiteValidator validator) {
 	this.validator = validator;
@@ -184,10 +196,10 @@ public void setBaseQueueName(String baseQueueName) {
 	 * @return  form validation of description
 	 */
 	public FormValidation doCheckDescription(@QueryParameter final String value) {
-		if (!validator.isDescriptionPresent(value)) {
+		if (!validator.isIDPresent(value)) {
 			return FormValidation.error("Please set a description");
 		}
-		if (validator.isDescriptionTooLong(value)) {
+		if (validator.isIDTooLong(value)) {
 			return FormValidation.error("Description is limited to 100 characters");
 		}
 
@@ -227,4 +239,6 @@ public void setBaseQueueName(String baseQueueName) {
 	    return FormValidation.ok("Base queue name is correctly Configured");
 	    
 	}
+
+
 }

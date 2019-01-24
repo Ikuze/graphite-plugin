@@ -106,7 +106,7 @@
 	</distributionManagement>
 
 	<properties>
-                <workflow-step-api-plugin.version>2.18</workflow-step-api-plugin.version>
+                <workflow-step-api-plugin.version>2.14</workflow-step-api-plugin.version>
 		<maven-hpi-plugin.version>1.112</maven-hpi-plugin.version>
 	</properties>
 </project>
