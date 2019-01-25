@@ -1,16 +1,18 @@
 package org.jenkinsci.plugins.graphiteIntegrator.metrics;
 
-
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.ExtensionPoint;
 import hudson.model.Run;
 import java.io.PrintStream;
 
 
-
 public abstract class GraphiteMetric implements ExtensionPoint {
 
         protected PrintStream logger;
+
+        public GraphiteMetric(){
+            this.logger = null;
+        }
 
         public GraphiteMetric(PrintStream logger){
             this.logger = logger;
@@ -26,7 +28,15 @@ public abstract class GraphiteMetric implements ExtensionPoint {
             this.logger = logger;
         }
 
-        @NonNull abstract public Snapshot getSnapshot(@NonNull Run run, @NonNull String baseQueue);
+        @NonNull abstract public String getQueueName();
+        @NonNull abstract public String getValue(Run run);
+
+        @NonNull final public Snapshot getSnapshot(Run run, @NonNull String baseQueue){
+            Snapshot snapshot = new Snapshot(baseQueue.concat(".").concat(this.getQueueName()),
+                                             this.getValue(run));
+
+            return snapshot;
+        }
 
         static public class Snapshot{
             private String queue;
