@@ -95,7 +95,9 @@ public class MetricReporter extends Step {
             ArrayList<GraphiteMetric.Snapshot> snapshots = new ArrayList<GraphiteMetric.Snapshot>();
 
             for(GraphiteMetric metric : GraphitePlugin.allMetrics){
-                snapshots.addAll(metric.getSnapshots(run, baseQueueName, listener.getLogger()));
+                if (metricNames.contains(metric.getName())){
+                    snapshots.addAll(metric.getSnapshots(run, baseQueueName, listener.getLogger()));
+                }
             }
 
             for(String serverId : this.serverIds){

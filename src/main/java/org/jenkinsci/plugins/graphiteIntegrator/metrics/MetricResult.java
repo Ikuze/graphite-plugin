@@ -15,6 +15,12 @@ import java.util.List;
 @Extension
 public class MetricResult extends GraphiteMetric {
 
+
+    @Override
+    public String getName(){
+        return "result";
+    }
+
     @Override
     public List<Snapshot> getSnapshots(@NonNull Run run, @NonNull String baseQueue, PrintStream logger){
         Result result = null;

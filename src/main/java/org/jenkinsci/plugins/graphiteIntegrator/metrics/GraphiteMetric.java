@@ -19,6 +19,7 @@ public abstract class GraphiteMetric implements ExtensionPoint {
         }
 
         @NonNull abstract public List<Snapshot> getSnapshots(@NonNull Run run, @NonNull String baseQueue, PrintStream logger);
+        @NonNull abstract public String getName();
 
         static public class Snapshot{
             private String queue;

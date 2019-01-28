@@ -13,6 +13,11 @@ import java.io.PrintStream;
 public class MetricDuration extends GraphiteMetric {
 
     @Override
+    public String getName(){
+        return "duration";
+    }
+
+    @Override
     public List<Snapshot> getSnapshots(@NonNull Run run, @NonNull String baseQueue, PrintStream logger){
         String queueName = "duration";
         String duration = null;
