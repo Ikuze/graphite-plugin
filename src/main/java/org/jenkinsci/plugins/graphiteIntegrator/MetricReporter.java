@@ -121,7 +121,7 @@ public class MetricReporter extends Step {
 
 
         @NonNull public Server getServerById(@NonNull String serverDesc) {
-            DescriptorImpl globalConfig = GlobalConfiguration.all().get(DescriptorImpl.class);
+            GlobalConfig globalConfig = GlobalConfiguration.all().get(GlobalConfig.class);
 
             Server[] servers = globalConfig.getServers();
             for (Server server : servers) {
@@ -133,7 +133,7 @@ public class MetricReporter extends Step {
         }
 
         @NonNull public String getBaseQueueName() {
-            DescriptorImpl globalConfig = GlobalConfiguration.all().get(DescriptorImpl.class);
+            GlobalConfig globalConfig = GlobalConfiguration.all().get(GlobalConfig.class);
             return globalConfig.getBaseQueueName();
         }
 
