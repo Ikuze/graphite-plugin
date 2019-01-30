@@ -60,8 +60,8 @@ public class GraphiteValidator {
         return true;
     }
 
-    public boolean isIDTooLong(String description) {
-        if (description.length() > 50) {
+    public boolean isIDTooLong(String description, int length) {
+        if (description.length() > length) {
             return true;
         }
         return false;

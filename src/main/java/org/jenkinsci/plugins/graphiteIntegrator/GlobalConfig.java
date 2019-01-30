@@ -124,8 +124,9 @@ import javax.annotation.Nonnull;
         if (!validator.isIDPresent(value)) {
             return FormValidation.error("Please set an ID");
         }
-        if (validator.isIDTooLong(value)) {
-            return FormValidation.error("ID is limited to 100 characters");
+        int length = 50;
+        if (validator.isIDTooLong(value, length)) {
+            return FormValidation.error(String.format("ID is limited to %d characters", length));
         }
 
         return FormValidation.ok("ID is correctly configured");

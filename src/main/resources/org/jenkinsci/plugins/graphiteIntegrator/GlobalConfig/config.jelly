@@ -11,8 +11,8 @@
       <f:repeatable var="currentServer" items="${descriptor.servers}" add="${%graphite_servers_add_new}">
         <table width="100%" >
 
-          <f:entry title="${%graphite_servers_adding_id}"  help="${helpURL}/graphite_servers_adding_description.html" >
-            <f:textbox name="serverBinding.description" value="${currentServer.description}" 
+          <f:entry title="${%graphite_servers_adding_id}"  help="${helpURL}/graphite_servers_adding_id.html" >
+            <f:textbox name="serverBinding.id" value="${currentServer.id}" 
                 checkUrl="'${rootURL}/descriptorByName/org.jenkinsci.plugins.graphiteIntegrator.GlobalConfig/checkID?value='+escape(this.value)"
             />
           </f:entry>

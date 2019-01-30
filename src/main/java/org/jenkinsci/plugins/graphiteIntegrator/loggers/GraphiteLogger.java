@@ -55,7 +55,6 @@ public class GraphiteLogger {
         //TMP to test
         long timestamp = System.currentTimeMillis()/1000;
         String data = queue + " " + metric + " " + timestamp + "\n";
-        
     	int intPort = Integer.parseInt(graphitePort);
     	byte[] buffer = data.getBytes();
         InetAddress IPAddress = InetAddress.getByName(graphiteHost);
@@ -66,6 +65,7 @@ public class GraphiteLogger {
         	sock.send(sendPacket);
         	sock.close();
         } catch(IOException e) {
+                this.getLogger().println("there was an exception: " + e.toString());
         	e.printStackTrace();
         }
     }
@@ -75,6 +75,7 @@ public class GraphiteLogger {
 		
         DataOutputStream dos = new DataOutputStream(conn.getOutputStream());
         String data = queue + " " + metric + " " + (System.currentTimeMillis()/1000) + "\n";
+        this.getLogger().println("SENT DATA: " + data);
         dos.writeBytes(data);
         conn.close();
     }

@@ -101,7 +101,7 @@ public class MetricReporter extends Step {
             }
 
             for(String serverId : this.serverIds){
-                listener.getLogger().println(serverId);
+                listener.getLogger().println("Sending data to graphite server: " + serverId);
                 Server server = this.getServerById(serverId);
                 this.notify(server, graphiteLogger, run, snapshots);
             }
@@ -114,18 +114,19 @@ public class MetricReporter extends Step {
                            Run run, List<GraphiteMetric.Snapshot> snapshots) throws InterruptedException, IOException{
 
             for(GraphiteMetric.Snapshot snapshot : snapshots){
+                graphiteLogger.getLogger().println(" Snapshot, value: " + snapshot.getValue() + " queue: " + snapshot.getQueue());
                 graphiteLogger.logToGraphite(server.getIp(), server.getPort(), snapshot.getQueue(),
                                              snapshot.getValue(), server.getProtocol());
             }
         } 
 
 
-        @NonNull public Server getServerById(@NonNull String serverDesc) {
+        @NonNull public Server getServerById(@NonNull String serverId) {
             GlobalConfig globalConfig = GlobalConfiguration.all().get(GlobalConfig.class);
 
             Server[] servers = globalConfig.getServers();
             for (Server server : servers) {
-                if (server.getDescription().equals(serverDesc)) {
+                if (server.getId().equals(serverId)) {
                     return server;
                 }
             }

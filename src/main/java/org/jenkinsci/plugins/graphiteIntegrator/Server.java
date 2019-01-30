@@ -1,20 +1,13 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package org.jenkinsci.plugins.graphiteIntegrator;
 
-/**
- * 
- * @author joachimrodrigues
- */
+
 public class Server {
 
     String ip;
 
     String port;
 
-    String description;
+    String id;
 
     String protocol;
 
@@ -34,8 +27,8 @@ public class Server {
         return port;
     }
 
-    public String getDescription() {
-        return description;
+    public String getId() {
+        return id;
     }
 
     public void setIp(String ip) {
@@ -46,8 +39,8 @@ public class Server {
         this.port = port;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setId(String id) {
+        this.id = id;
     }
 
 }

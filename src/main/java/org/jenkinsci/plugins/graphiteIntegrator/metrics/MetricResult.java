@@ -35,9 +35,8 @@ public class MetricResult extends GraphiteMetric {
         else{
             result = run.getResult();
         }
-
-        Snapshot snapshot = new Snapshot(baseQueue.concat(".").concat(queueName),
-                                         result.toString());
+        String fullName = baseQueue.concat(".").concat(queueName).concat(".").concat(result.toString());
+        Snapshot snapshot = new Snapshot(fullName, "1");
 
         ArrayList<Snapshot> snapshots = new ArrayList<Snapshot>();
         snapshots.add(snapshot);

@@ -92,7 +92,8 @@ public class DataReporter extends Step {
             String baseQueueName = this.getBaseQueueName();
             GraphiteLogger graphiteLogger = new GraphiteLogger(listener.getLogger());
 
-            GraphiteMetric.Snapshot snapshot = new GraphiteMetric.Snapshot(this.dataQueue,
+            String queueName = baseQueueName.concat(".").concat(this.dataQueue);
+            GraphiteMetric.Snapshot snapshot = new GraphiteMetric.Snapshot(queueName,
                                                                            this.data);
 
             for(String serverId : this.serverIds){
@@ -113,12 +114,12 @@ public class DataReporter extends Step {
         } 
 
 
-        @NonNull public Server getServerById(@NonNull String serverDesc) {
+        @NonNull public Server getServerById(@NonNull String serverId) {
             GlobalConfig globalConfig = GlobalConfiguration.all().get(GlobalConfig.class);
 
             Server[] servers = globalConfig.getServers();
             for (Server server : servers) {
-                if (server.getDescription().equals(serverDesc)) {
+                if (server.getId().equals(serverId)) {
                     return server;
                 }
             }
