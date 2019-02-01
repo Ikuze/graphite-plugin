@@ -3,7 +3,6 @@ package org.jenkinsci.plugins.graphiteIntegrator;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import com.google.common.collect.ImmutableSet;
-import  org.jenkinsci.plugins.graphiteIntegrator.loggers.GraphiteLogger;
 import org.jenkinsci.plugins.workflow.steps.Step;
 import org.jenkinsci.plugins.workflow.steps.StepDescriptor;
 import org.jenkinsci.plugins.workflow.steps.StepExecution;
@@ -90,7 +89,6 @@ public class DataReporter extends Step {
             Run run = getContext().get(Run.class);
 
             String baseQueueName = this.getBaseQueueName();
-            GraphiteLogger graphiteLogger = new GraphiteLogger(listener.getLogger());
 
             String queueName = baseQueueName.concat(".").concat(this.dataQueue);
             GraphiteMetric.Snapshot snapshot = new GraphiteMetric.Snapshot(queueName,
@@ -99,19 +97,11 @@ public class DataReporter extends Step {
             for(String serverId : this.serverIds){
                 listener.getLogger().println(serverId);
                 Server server = this.getServerById(serverId);
-                this.notify(server, graphiteLogger, run,  snapshot);
+                server.send(snapshot, listener.getLogger());
             }
 
             return null;
         }
-
-
-        public void notify(Server server, GraphiteLogger graphiteLogger,
-                           Run run, GraphiteMetric.Snapshot snapshot) throws InterruptedException, IOException{
-
-            graphiteLogger.logToGraphite(server.getIp(), server.getPort(), snapshot.getQueue(),
-                                         snapshot.getValue(), server.getProtocol());
-        } 
 
 
         @NonNull public Server getServerById(@NonNull String serverId) {
