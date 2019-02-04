@@ -3,7 +3,7 @@
     xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
 
 
-  <j:set var="helpURL" value="/plugin/graphiteIntegrator/help/global" />
+  <j:set var="helpURL" value="/plugin/another-graphite-reporter/help/global" />
 
   <f:section title="${%graphite_server_title}" >
 
@@ -13,19 +13,19 @@
 
           <f:entry title="${%graphite_servers_adding_id}"  help="${helpURL}/graphite_servers_adding_id.html" >
             <f:textbox name="serverBinding.id" value="${currentServer.id}" 
-                checkUrl="'${rootURL}/descriptorByName/org.jenkinsci.plugins.graphiteIntegrator.GlobalConfig/checkID?value='+escape(this.value)"
+                checkUrl="'${rootURL}/descriptorByName/org.jenkinsci.plugins.another.graphite.GlobalConfig/checkID?value='+escape(this.value)"
             />
           </f:entry>
 
           <f:entry title="${%graphite_servers_adding_ip}" help="${helpURL}/graphite_servers_adding_ip.html" field="ip">
             <f:textbox name="serverBinding.ip"   value="${currentServer.ip}"
-                checkUrl="'${rootURL}/descriptorByName/org.jenkinsci.plugins.graphiteIntegrator.GlobalConfig/checkIp?value='+escape(this.value)"
+                checkUrl="'${rootURL}/descriptorByName/org.jenkinsci.plugins.another.graphite.GlobalConfig/checkIp?value='+escape(this.value)"
             />
           </f:entry>
 
           <f:entry title="${%graphite_servers_adding_port}" help="${helpURL}/graphite_servers_adding_port.html" field="port">
             <f:textbox name="serverBinding.port"  value="${currentServer.port}"
-                checkUrl="'${rootURL}/descriptorByName/org.jenkinsci.plugins.graphiteIntegrator.GlobalConfig/checkPort?value='+escape(this.value)"
+                checkUrl="'${rootURL}/descriptorByName/org.jenkinsci.plugins.another.graphite.GlobalConfig/checkPort?value='+escape(this.value)"
            />
           </f:entry>
           
@@ -49,7 +49,7 @@
       </f:repeatable>
 	</f:entry>
 	<f:entry title="${%base_graphite_queue_name}" help="${helpURL}/graphite_base_queue_name.html" field="baseQueueName" >
-        <f:textbox checkUrl="'${rootURL}/descriptorByName/org.jenkinsci.plugins.graphiteIntegrator.GlobalConfig/checkBaseQueueName?value='+escape(this.value)" />
+        <f:textbox checkUrl="'${rootURL}/descriptorByName/org.jenkinsci.plugins.another.graphite.GlobalConfig/checkBaseQueueName?value='+escape(this.value)" />
     </f:entry>
   </f:section>
 </j:jelly>

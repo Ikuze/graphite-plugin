@@ -1,4 +1,4 @@
-package org.jenkinsci.plugins.graphiteIntegrator.metrics;
+package org.jenkinsci.plugins.another.graphite.metrics;
 
 import hudson.Extension;
 import hudson.model.Run;

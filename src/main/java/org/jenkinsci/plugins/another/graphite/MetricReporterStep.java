@@ -1,7 +1,5 @@
-package org.jenkinsci.plugins.graphiteIntegrator;
+package org.jenkinsci.plugins.another.graphite;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
 import com.google.common.collect.ImmutableSet;
 import org.jenkinsci.plugins.workflow.steps.Step;
 import org.jenkinsci.plugins.workflow.steps.StepDescriptor;
@@ -9,33 +7,28 @@ import org.jenkinsci.plugins.workflow.steps.StepExecution;
 import org.jenkinsci.plugins.workflow.steps.StepContext;
 import org.jenkinsci.plugins.workflow.steps.SynchronousStepExecution;
 import hudson.Extension;
-import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
-import java.util.Collections;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.DataBoundSetter;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.model.TaskListener;
 
 import hudson.model.Run;
-import hudson.model.Action;
-import jenkins.model.Jenkins;
 import jenkins.model.GlobalConfiguration;
 
-import org.jenkinsci.plugins.graphiteIntegrator.metrics.GraphiteMetric;
+import org.jenkinsci.plugins.another.graphite.metrics.GraphiteMetric;
 
-public class MetricReporter extends Step {
+public class MetricReporterStep extends Step {
 
     private List<String> servers;
     List<String> metricNames;
     boolean fail;
 
-    @DataBoundConstructor public MetricReporter(@NonNull List <String> servers,
-                                                @NonNull List <String> metricNames,
-                                                @NonNull boolean fail) {
+    @DataBoundConstructor public MetricReporterStep(@NonNull List <String> servers,
+                                                    @NonNull List <String> metricNames,
+                                                    @NonNull boolean fail) {
         this.servers = servers;
         this.metricNames = metricNames;
         this.fail = fail;

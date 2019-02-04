@@ -1,6 +1,6 @@
-package org.jenkinsci.plugins.graphiteIntegrator;
+package org.jenkinsci.plugins.another.graphite;
 
-import org.jenkinsci.plugins.graphiteIntegrator.metrics.GraphiteMetric.Snapshot;
+import org.jenkinsci.plugins.another.graphite.metrics.GraphiteMetric.Snapshot;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import java.io.PrintStream;
 import java.util.List;

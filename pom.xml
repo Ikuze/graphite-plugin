@@ -6,23 +6,12 @@
 		<version>1.596</version><!-- which version of Jenkins is this plugin built 
 			against? -->
 	</parent>
-	<artifactId>graphiteIntegrator</artifactId>
-	<version>1.3-SNAPSHOT</version>
+	<artifactId>another-graphite-reporter</artifactId>
+	<version>1.0-SNAPSHOT</version>
 	<packaging>hpi</packaging>
-	<url>https://wiki.jenkins-ci.org/display/JENKINS/Graphite-plugin</url>
+	<url></url>
 
 	<developers>
-		<developer>
-			<id>joachim_rodrigues</id>
-			<name>joachim rodrigues</name>
-			<email>rodrigues.joachim@gmail.com</email>
-		</developer>
-
-		<developer>
-			<id>patelm5</id>
-			<name>Mike Patel</name>
-			<email>mpatelgrad@gmail.com</email>
-		</developer>
 	</developers>
 
 	<scm>

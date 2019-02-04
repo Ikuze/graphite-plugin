@@ -1,4 +1,4 @@
-package org.jenkinsci.plugins.graphiteIntegrator;
+package org.jenkinsci.plugins.another.graphite;
 
 import hudson.init.InitMilestone;
 import hudson.init.Initializer;
@@ -8,7 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.ArrayList;
 
-import org.jenkinsci.plugins.graphiteIntegrator.metrics.GraphiteMetric;
+import org.jenkinsci.plugins.another.graphite.metrics.GraphiteMetric;
 
 public class GraphitePlugin extends Plugin {
 

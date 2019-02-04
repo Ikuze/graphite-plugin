@@ -1,4 +1,4 @@
-package org.jenkinsci.plugins.graphiteIntegrator;
+package org.jenkinsci.plugins.another.graphite;
 
 import hudson.model.AbstractProject;
 import hudson.model.ModelObject;
