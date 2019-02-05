@@ -41,7 +41,7 @@ public class MetricResult extends GraphiteMetric {
         ArrayList<Snapshot> snapshots = new ArrayList<Snapshot>();
         snapshots.add(snapshot);
 
-        this.log(logger, "Metric Result: " + snapshot.getValue());
+        this.log(logger, "Metric Result: " + result.toString() + " -> " + snapshot.getValue());
 
         return snapshots;
     }

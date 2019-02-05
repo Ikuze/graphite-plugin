@@ -19,6 +19,7 @@ import hudson.model.Run;
 import jenkins.model.GlobalConfiguration;
 
 import org.jenkinsci.plugins.another.graphite.metrics.GraphiteMetric;
+import org.jenkinsci.plugins.another.graphite.servers.Server;
 
 public class MetricReporterStep extends Step {
 
@@ -36,10 +37,6 @@ public class MetricReporterStep extends Step {
 
     @Override public StepExecution start(StepContext context) throws Exception {
         return new Execution(this.servers, this.metricNames, this.fail, context);
-    }
-
-    public List<String> getServers() {
-        return servers;
     }
 
     @Extension public static final class StepDescriptorImpl extends StepDescriptor {

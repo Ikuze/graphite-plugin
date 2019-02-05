@@ -11,18 +11,16 @@ import net.sf.json.JSONObject;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import utils.GraphiteValidator;
-
 import java.util.Iterator;
-
 import jenkins.model.GlobalConfiguration;
-
 import hudson.Extension;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Nonnull;
-
 import java.util.List;
 import java.util.ArrayList;
+import org.jenkinsci.plugins.another.graphite.servers.Server;
+
 
 @Extension public final class GlobalConfig extends GlobalConfiguration  {
     protected static final Logger LOGGER = Logger.getLogger(GlobalConfig.class.getName());
@@ -41,7 +39,6 @@ import java.util.ArrayList;
     }
 
     public GlobalConfig() {
-        LOGGER.log(Level.INFO, "DescriptorImmp constructed");
         load();
     }
 
@@ -51,7 +48,6 @@ import java.util.ArrayList;
     }
 
     public void setServers(List<Server> servers){
-        LOGGER.log(Level.INFO, "Set servers called");
         this.servers = servers;
     }
 
@@ -59,42 +55,24 @@ import java.util.ArrayList;
         return this.servers;
     }
 
-    //public Server[] getServers() {
-    //    Iterator<Server> it = servers.iterator();
-    //    int size = 0;
-    //    while (it.hasNext()) {
-    //        it.next();
-    //        size++;
-    //    }
-    //    return servers.toArray(new Server[size]);
-    //}
-
     @Override
     public String getDisplayName() {
-        LOGGER.log(Level.INFO, "GlobalConfig Showing display name");
         return "Publish metrics to Graphite Server";
     }
 
     @Override
     public boolean configure(StaplerRequest req, JSONObject formData) throws FormException {
 
-        LOGGER.log(Level.INFO, String.format("Graphite Server form data: %s", formData.toString()));
         try {
             req.bindJSON(this, formData);
         } catch (Exception e) {
-            LOGGER.log(Level.INFO, String.format("Problem while submitting form for Graphite Plugin (%s). (%s)", e.getMessage(), e));
-            LOGGER.log(Level.INFO, String.format("Graphite Server form data: %s", formData.toString()));
+            LOGGER.log(Level.SEVERE, String.format("Problem while submitting form for Graphite Plugin (%s). (%s)", e.getMessage(), e));
+            LOGGER.log(Level.SEVERE, String.format("Graphite Server form data: %s", formData.toString()));
             throw new FormException(
                     String.format("Malformed Graphite Server Plugin configuration (%s)", e.getMessage()), e, "graphite-global-configuration");
         }
         save();
-        LOGGER.log(Level.INFO, String.format("Servers: %s", this.servers));
         return true;
-
-        //servers.replaceBy(req.bindParametersToList(Server.class, "serverBinding."));
-        //baseQueueName = formData.optString("baseQueueName", "");
-        //save();
-        //return true;
     }
 
 
@@ -114,7 +92,6 @@ import java.util.ArrayList;
 
    @Override
     public String getGlobalConfigPage() {
-        LOGGER.log(Level.INFO, "returned config page {0}", getConfigPage());
         return getConfigPage();
     }
 
