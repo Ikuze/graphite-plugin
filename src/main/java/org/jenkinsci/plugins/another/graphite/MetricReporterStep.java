@@ -103,7 +103,7 @@ public class MetricReporterStep extends Step {
         @NonNull public Server getServerById(@NonNull String serverId) {
             GlobalConfig globalConfig = GlobalConfiguration.all().get(GlobalConfig.class);
 
-            Server[] servers = globalConfig.getServers();
+            List<Server> servers = globalConfig.getServers();
             for (Server server : servers) {
                 if (server.getId().equals(serverId)) {
                     return server;

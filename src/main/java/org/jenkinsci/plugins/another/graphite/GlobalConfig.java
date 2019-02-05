@@ -21,10 +21,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Nonnull;
 
+import java.util.List;
+import java.util.ArrayList;
+
 @Extension public final class GlobalConfig extends GlobalConfiguration  {
     protected static final Logger LOGGER = Logger.getLogger(GlobalConfig.class.getName());
 
-    private final CopyOnWriteList<Server> servers = new CopyOnWriteList<Server>();
+    private List<Server> servers = new ArrayList<Server>();
     private GraphiteValidator validator = new GraphiteValidator();
     private String baseQueueName;
 
@@ -42,15 +45,29 @@ import javax.annotation.Nonnull;
         load();
     }
 
-    public Server[] getServers() {
-        Iterator<Server> it = servers.iterator();
-        int size = 0;
-        while (it.hasNext()) {
-            it.next();
-            size++;
-        }
-        return servers.toArray(new Server[size]);
+    public GlobalConfig(List<Server> servers, String baseQueueName){
+        this.servers = servers;
+        this.baseQueueName = baseQueueName;
     }
+
+    public void setServers(List<Server> servers){
+        LOGGER.log(Level.INFO, "Set servers called");
+        this.servers = servers;
+    }
+
+    public List<Server> getServers(){
+        return this.servers;
+    }
+
+    //public Server[] getServers() {
+    //    Iterator<Server> it = servers.iterator();
+    //    int size = 0;
+    //    while (it.hasNext()) {
+    //        it.next();
+    //        size++;
+    //    }
+    //    return servers.toArray(new Server[size]);
+    //}
 
     @Override
     public String getDisplayName() {
@@ -59,12 +76,32 @@ import javax.annotation.Nonnull;
     }
 
     @Override
-    public boolean configure(StaplerRequest req, JSONObject formData) {
-        servers.replaceBy(req.bindParametersToList(Server.class, "serverBinding."));
-        baseQueueName = formData.optString("baseQueueName", "");
+    public boolean configure(StaplerRequest req, JSONObject formData) throws FormException {
+
+        LOGGER.log(Level.INFO, String.format("Graphite Server form data: %s", formData.toString()));
+        try {
+            req.bindJSON(this, formData);
+        } catch (Exception e) {
+            LOGGER.log(Level.INFO, String.format("Problem while submitting form for Graphite Plugin (%s). (%s)", e.getMessage(), e));
+            LOGGER.log(Level.INFO, String.format("Graphite Server form data: %s", formData.toString()));
+            throw new FormException(
+                    String.format("Malformed Graphite Server Plugin configuration (%s)", e.getMessage()), e, "graphite-global-configuration");
+        }
         save();
+        LOGGER.log(Level.INFO, String.format("Servers: %s", this.servers));
         return true;
+
+        //servers.replaceBy(req.bindParametersToList(Server.class, "serverBinding."));
+        //baseQueueName = formData.optString("baseQueueName", "");
+        //save();
+        //return true;
     }
+
+
+    public void setBaseQueueName(String baseQueueName){
+        this.baseQueueName = baseQueueName;
+    }
+
 
     public String getBaseQueueName(){
         return baseQueueName;
@@ -85,65 +122,6 @@ import javax.annotation.Nonnull;
         this.validator = validator;
     }
 
-
-    public void setBaseQueueName(String baseQueueName) {
-        this.baseQueueName = baseQueueName;
-    }
-
-
-    public FormValidation doTestConnection(@QueryParameter("serverBinding.ip") final String ip,
-        @QueryParameter("serverBinding.port") final String port,
-        @QueryParameter("serverBinding.protocol") final String protocol) {
-        if(protocol.equals("UDP")) {
-            return FormValidation.ok("UDP is configured");
-        }
-        else if(protocol.equals("TCP")) {
-            if (!validator.isIpPresent(ip) || !validator.isPortPresent(port)
-                    || !validator.isListening(ip, Integer.parseInt(port))) {
-                return FormValidation.error("Server is not listening... Or ip:port are not correctly filled");
-            }
-
-            return FormValidation.ok("Server is listening");
-        } else {
-            return FormValidation.ok("Unknown protocol");
-        }
-    }
-
-    public FormValidation doCheckIp(@QueryParameter final String value) {
-        if (!validator.isIpPresent(value)) {
-            return FormValidation.error("Please set a ip");
-        }
-        if (!validator.validateIpFormat(value)) {
-            return FormValidation.error("Please check the IP format");
-        }
-
-        return FormValidation.ok("IP is correctly configured");
-    }
-
-    public FormValidation doCheckID(@QueryParameter final String value) {
-        if (!validator.isIDPresent(value)) {
-            return FormValidation.error("Please set an ID");
-        }
-        int length = 50;
-        if (validator.isIDTooLong(value, length)) {
-            return FormValidation.error(String.format("ID is limited to %d characters", length));
-        }
-
-        return FormValidation.ok("ID is correctly configured");
-    }
-
-    public FormValidation doCheckPort(@QueryParameter final String value) {
-        if (!validator.isPortPresent(value)) {
-            return FormValidation.error("Please set a port");
-        }
-
-        if (!validator.validatePortFormat(value)) {
-            return FormValidation.error("Please check the port format");
-        }
-
-        return FormValidation.ok("Port is correctly configured");
-    }
-    
     public FormValidation doCheckBaseQueueName(@QueryParameter final String value) {
         if(!validator.isBaseQueueNamePresent(value)){
             return FormValidation.ok();
@@ -155,4 +133,5 @@ import javax.annotation.Nonnull;
         
         return FormValidation.ok("Base queue name is correctly Configured");
     }
+
 }
