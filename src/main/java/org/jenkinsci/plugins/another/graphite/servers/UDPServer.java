@@ -30,17 +30,22 @@ public class UDPServer extends Server {
         int intPort = Integer.parseInt(this.getPort());
         byte[] buffer = data.getBytes();
         InetAddress IPAddress = InetAddress.getByName(this.getIp());
-        
+        DatagramSocket sock= null;
         try {
-            DatagramSocket sock = new DatagramSocket(intPort);
+            sock = new DatagramSocket();
             DatagramPacket sendPacket = new DatagramPacket(buffer, buffer.length, IPAddress, intPort);
             sock.send(sendPacket);
-            sock.close();
-        } catch(IOException e) {
+        }
+        catch(IOException e) {
             if(logger != null){
                 logger.println("There was an exception sending graphite UDP: " + e.toString());
             }
             e.printStackTrace();
+        }
+        finally {
+            if(sock != null){
+                sock.close();
+            }
         }
     }
 
