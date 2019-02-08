@@ -1,4 +1,4 @@
-package org.jenkinsci.plugins.another.graphite;
+package org.jenkinsci.plugins.another.graphite.pipeline;
 
 import com.google.common.collect.ImmutableSet;
 import org.jenkinsci.plugins.workflow.steps.Step;
@@ -8,6 +8,7 @@ import org.jenkinsci.plugins.workflow.steps.StepContext;
 import org.jenkinsci.plugins.workflow.steps.SynchronousStepExecution;
 import hudson.Extension;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Set;
 import org.kohsuke.stapler.DataBoundConstructor;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -19,29 +20,31 @@ import jenkins.model.GlobalConfiguration;
 
 import org.jenkinsci.plugins.another.graphite.metrics.GraphiteMetric;
 import org.jenkinsci.plugins.another.graphite.servers.Server;
+import org.jenkinsci.plugins.another.graphite.GlobalConfig;
+import org.jenkinsci.plugins.another.graphite.GraphitePlugin;
 
-public class DataReporterStep extends Step {
+public class MetricReporterStep extends Step {
 
     private List<String> servers;
-    String dataQueue;
-    String data;
+    List<String> metricNames;
+    boolean fail;
 
-    @DataBoundConstructor public DataReporterStep(@NonNull List <String> servers,
-                                                  @NonNull String dataQueue,
-                                                  @NonNull String data) {
+    @DataBoundConstructor public MetricReporterStep(@NonNull List <String> servers,
+                                                    @NonNull List <String> metricNames,
+                                                    @NonNull boolean fail) {
         this.servers = servers;
-        this.dataQueue = dataQueue;
-        this.data = data;
+        this.metricNames = metricNames;
+        this.fail = fail;
     }
 
     @Override public StepExecution start(StepContext context) throws Exception {
-        return new Execution(this.servers, this.dataQueue, this.data, context);
+        return new Execution(this.servers, this.metricNames, this.fail, context);
     }
 
     @Extension public static final class StepDescriptorImpl extends StepDescriptor {
 
         @Override public String getFunctionName() {
-            return "graphiteData";
+            return "graphite";
         }
 
         @Override public String getDisplayName() {
@@ -52,6 +55,10 @@ public class DataReporterStep extends Step {
             return ImmutableSet.of(Run.class, TaskListener.class);
         }
 
+    //    @Override public String argumentsToString(Map<String, Object> namedArgs) {
+    //        return null; // "true" is not a reasonable description
+    //    }
+
     }
 
 
@@ -59,14 +66,14 @@ public class DataReporterStep extends Step {
         
         @SuppressFBWarnings(value="SE_TRANSIENT_FIELD_NOT_RESTORED", justification="Only used when starting.")
         private transient final List<String> serverIds;
-        private transient final String dataQueue;
-        private transient final String data;
+        private transient final List<String> metricNames;
+        private transient final boolean fail;
 
-        Execution(List<String> serverIds, String dataQueue, String data, StepContext context) {
+        Execution(List<String> serverIds, List<String> metricNames, boolean fail, StepContext context) {
             super(context);
             this.serverIds = serverIds;
-            this.dataQueue = dataQueue;
-            this.data = data;
+            this.metricNames = metricNames;
+            this.fail = fail;
         }
 
         @Override protected Void run() throws Exception {
@@ -75,19 +82,22 @@ public class DataReporterStep extends Step {
 
             String baseQueueName = this.getBaseQueueName();
 
-            String queueName = baseQueueName.concat(".").concat(this.dataQueue);
-            GraphiteMetric.Snapshot snapshot = new GraphiteMetric.Snapshot(queueName,
-                                                                           this.data);
+            ArrayList<GraphiteMetric.Snapshot> snapshots = new ArrayList<GraphiteMetric.Snapshot>();
+
+            for(GraphiteMetric metric : GraphitePlugin.allMetrics){
+                if (metricNames.contains(metric.getName())){
+                    snapshots.addAll(metric.getSnapshots(run, baseQueueName, listener.getLogger()));
+                }
+            }
 
             for(String serverId : this.serverIds){
-                listener.getLogger().println(serverId);
+                listener.getLogger().println("Sending data to graphite server: " + serverId);
                 Server server = this.getServerById(serverId);
-                server.send(snapshot, listener.getLogger());
+                server.send(snapshots, listener.getLogger());
             }
 
             return null;
         }
-
 
         @NonNull public Server getServerById(@NonNull String serverId) {
             GlobalConfig globalConfig = GlobalConfiguration.all().get(GlobalConfig.class);
