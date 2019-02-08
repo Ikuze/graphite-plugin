@@ -20,25 +20,24 @@ public class MetricTests extends GraphiteMetric {
 
 
     @Override
-    public List<Snapshot> getSnapshots(@NonNull Run run, @NonNull String baseQueue, PrintStream logger){
-        String queueName = this.getName();
-        String queue = baseQueue.concat(".").concat(queueName);
+    public List<Snapshot> getSnapshots(@NonNull Run run, PrintStream logger){
+        String queue = this.getName();
 
         AbstractTestResultAction action = run.getAction(AbstractTestResultAction.class);
 
         ArrayList<Snapshot> snapshots = new ArrayList<Snapshot>();
         if(action != null){
-            Snapshot snapshot = new Snapshot(queue.concat(".").concat("skipped"),
+            Snapshot snapshot = new Snapshot("skipped",
                                              Integer.toString(action.getSkipCount()));
-            snapshots.add(snapshot);
+            snapshots.add(snapshot.rebaseQueue(queue).rebaseQueue(run));
 
-            snapshot = new Snapshot(queue.concat(".").concat("failed"),
+            snapshot = new Snapshot("failed",
                                     Integer.toString(action.getFailCount()));
-            snapshots.add(snapshot);
+            snapshots.add(snapshot.rebaseQueue(queue).rebaseQueue(run));
 
-            snapshot = new Snapshot(queue.concat(".").concat("total"),
+            snapshot = new Snapshot("total",
                                     Integer.toString(action.getTotalCount()));
-            snapshots.add(snapshot);
+            snapshots.add(snapshot.rebaseQueue(queue).rebaseQueue(run));
         }
         else{
             this.log(logger, "No test found! Nothing to report.");

@@ -7,6 +7,7 @@ import hudson.model.Run;
 import java.io.PrintStream;
 
 import java.util.List;
+import hudson.model.Run;
 
 
 public abstract class GraphiteMetric implements ExtensionPoint {
@@ -18,7 +19,7 @@ public abstract class GraphiteMetric implements ExtensionPoint {
             }
         }
 
-        @NonNull abstract public List<Snapshot> getSnapshots(@NonNull Run run, @NonNull String baseQueue, PrintStream logger);
+        @NonNull abstract public List<Snapshot> getSnapshots(@NonNull Run run, PrintStream logger);
         @NonNull abstract public String getName();
 
         static public class Snapshot{
@@ -44,6 +45,23 @@ public abstract class GraphiteMetric implements ExtensionPoint {
 
             public void setQueue(@NonNull String queue){
                 this.queue = queue;
+            }
+
+            public Snapshot rebaseQueue(@NonNull String baseQueue){
+                if(baseQueue != ""){
+                    this.setQueue(baseQueue.concat(".").concat(this.getQueue()));
+                }
+
+                return this;
+            }
+
+            public Snapshot rebaseQueue(@NonNull Run run){
+                String baseQueue = run.getParent().getFullName().replace("/",".");
+                return this.rebaseQueue(baseQueue);
+            }
+
+            public String toString(){
+                return "Queue: " + this.queue + " Value: " + this.value;
             }
 
         }

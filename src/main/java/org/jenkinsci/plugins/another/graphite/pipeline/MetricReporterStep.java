@@ -23,13 +23,16 @@ import org.jenkinsci.plugins.another.graphite.servers.Server;
 import org.jenkinsci.plugins.another.graphite.GlobalConfig;
 import org.jenkinsci.plugins.another.graphite.GraphitePlugin;
 
+
 public class MetricReporterStep extends Step {
 
     private List<String> servers;
     List<String> metricNames;
     boolean fail;
 
-    @DataBoundConstructor public MetricReporterStep(@NonNull List <String> servers,
+
+    @DataBoundConstructor
+    public MetricReporterStep(@NonNull List <String> servers,
                                                     @NonNull List <String> metricNames,
                                                     @NonNull boolean fail) {
         this.servers = servers;
@@ -37,28 +40,29 @@ public class MetricReporterStep extends Step {
         this.fail = fail;
     }
 
-    @Override public StepExecution start(StepContext context) throws Exception {
+    @Override
+    public StepExecution start(StepContext context) throws Exception {
         return new Execution(this.servers, this.metricNames, this.fail, context);
     }
 
-    @Extension public static final class StepDescriptorImpl extends StepDescriptor {
 
-        @Override public String getFunctionName() {
+    @Extension
+    public static final class StepDescriptorImpl extends StepDescriptor {
+
+        @Override
+        public String getFunctionName() {
             return "graphite";
         }
 
-        @Override public String getDisplayName() {
+        @Override
+        public String getDisplayName() {
             return "Report single data to graphite server";
         }
 
-        @Override public Set<? extends Class<?>> getRequiredContext() {
+        @Override
+        public Set<? extends Class<?>> getRequiredContext() {
             return ImmutableSet.of(Run.class, TaskListener.class);
         }
-
-    //    @Override public String argumentsToString(Map<String, Object> namedArgs) {
-    //        return null; // "true" is not a reasonable description
-    //    }
-
     }
 
 
@@ -76,7 +80,8 @@ public class MetricReporterStep extends Step {
             this.fail = fail;
         }
 
-        @Override protected Void run() throws Exception {
+        @Override
+        protected Void run() throws Exception {
             TaskListener listener = getContext().get(TaskListener.class);
             Run run = getContext().get(Run.class);
 
@@ -86,20 +91,25 @@ public class MetricReporterStep extends Step {
 
             for(GraphiteMetric metric : GraphitePlugin.allMetrics){
                 if (metricNames.contains(metric.getName())){
-                    snapshots.addAll(metric.getSnapshots(run, baseQueueName, listener.getLogger()));
+                    for(GraphiteMetric.Snapshot snapshot : metric.getSnapshots(run,
+                                                                               listener.getLogger())){
+                        snapshots.add(snapshot.rebaseQueue(baseQueueName));
+                    }
                 }
             }
 
+            long timestamp = System.currentTimeMillis()/1000;
             for(String serverId : this.serverIds){
                 listener.getLogger().println("Sending data to graphite server: " + serverId);
                 Server server = this.getServerById(serverId);
-                server.send(snapshots, listener.getLogger());
+                server.send(snapshots, timestamp, listener.getLogger());
             }
 
             return null;
         }
 
-        @NonNull public Server getServerById(@NonNull String serverId) {
+        @NonNull
+        public Server getServerById(@NonNull String serverId) {
             GlobalConfig globalConfig = GlobalConfiguration.all().get(GlobalConfig.class);
 
             List<Server> servers = globalConfig.getServers();
@@ -111,12 +121,10 @@ public class MetricReporterStep extends Step {
             return null;
         }
 
-        @NonNull public String getBaseQueueName() {
+        @NonNull
+        public String getBaseQueueName() {
             GlobalConfig globalConfig = GlobalConfiguration.all().get(GlobalConfig.class);
             return globalConfig.getBaseQueueName();
         }
-
-
     }
-
 }

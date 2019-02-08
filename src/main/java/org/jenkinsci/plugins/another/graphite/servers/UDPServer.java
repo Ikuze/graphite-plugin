@@ -10,8 +10,8 @@ import java.net.DatagramPacket;
 import hudson.util.FormValidation;
 import hudson.Extension;
 import org.kohsuke.stapler.QueryParameter;
-
 import org.kohsuke.stapler.DataBoundConstructor;
+
 
 public class UDPServer extends Server {
 
@@ -24,8 +24,8 @@ public class UDPServer extends Server {
     }
 
     @Override
-    public void send(@NonNull String queue, @NonNull String value, PrintStream logger) throws UnknownHostException, IOException  {
-        long timestamp = System.currentTimeMillis()/1000;
+    protected void send(@NonNull String queue, @NonNull String value,
+                      @NonNull long timestamp, PrintStream logger) throws UnknownHostException, IOException  {
         String data = queue + " " + value + " " + timestamp + "\n";
         int intPort = Integer.parseInt(this.getPort());
         byte[] buffer = data.getBytes();
@@ -35,6 +35,9 @@ public class UDPServer extends Server {
             sock = new DatagramSocket();
             DatagramPacket sendPacket = new DatagramPacket(buffer, buffer.length, IPAddress, intPort);
             sock.send(sendPacket);
+            if(logger != null){
+                logger.println("UDP SENT DATA: " + data);
+            }
         }
         catch(IOException e) {
             if(logger != null){

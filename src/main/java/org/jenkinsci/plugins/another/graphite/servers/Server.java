@@ -23,6 +23,7 @@ import java.util.List;
 import hudson.util.ListBoxModel;
 import org.kohsuke.stapler.DataBoundConstructor;
 
+
 public abstract class Server extends AbstractDescribableImpl<Server> {
 
     protected String ip;
@@ -54,19 +55,32 @@ public abstract class Server extends AbstractDescribableImpl<Server> {
         return id;
     }
 
-    public void send(@NonNull List<Snapshot> snapshots, PrintStream logger) throws UnknownHostException, IOException {
+    public void send(@NonNull List<Snapshot> snapshots, @NonNull long timestamp, 
+                     PrintStream logger) throws UnknownHostException, IOException {
         for(Snapshot snapshot: snapshots){
-            this.send(snapshot.getQueue(), snapshot.getValue(), logger);
+            this.send(snapshot.getQueue(), snapshot.getValue(), timestamp, logger);
         }
     }
 
-    public void send(@NonNull Snapshot snapshot, PrintStream logger) throws UnknownHostException, IOException {
-        this.send(snapshot.getQueue(), snapshot.getValue(), logger);
+    public void send(@NonNull List<Snapshot> snapshots, PrintStream logger) throws UnknownHostException, IOException {
+        long timestamp = System.currentTimeMillis()/1000;
+        for(Snapshot snapshot: snapshots){
+            this.send(snapshot.getQueue(), snapshot.getValue(), timestamp, logger);
+        }
     }
 
-    public abstract void send(@NonNull String queue, @NonNull String value, PrintStream logger) throws UnknownHostException, IOException;
+    public void send(@NonNull Snapshot snapshot, @NonNull long timestamp, PrintStream logger) throws UnknownHostException, IOException {
+        this.send(snapshot.getQueue(), snapshot.getValue(), timestamp, logger);
+    }
 
- 
+    public void send(@NonNull Snapshot snapshot, PrintStream logger) throws UnknownHostException, IOException {
+        long timestamp = System.currentTimeMillis()/1000;
+        this.send(snapshot.getQueue(), snapshot.getValue(), timestamp, logger);
+    }
+
+    protected abstract void send(@NonNull String queue, @NonNull String value,
+                               @NonNull long timestamp, PrintStream logger) throws UnknownHostException, IOException;
+
     public static abstract class DescriptorImpl extends Descriptor<Server> {
         protected GraphiteValidator validator = new GraphiteValidator();
 

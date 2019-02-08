@@ -18,7 +18,7 @@ public class MetricDuration extends GraphiteMetric {
     }
 
     @Override
-    public List<Snapshot> getSnapshots(@NonNull Run run, @NonNull String baseQueue, PrintStream logger){
+    public List<Snapshot> getSnapshots(@NonNull Run run, PrintStream logger){
         String queueName = "duration";
         String duration = null;
 
@@ -33,8 +33,8 @@ public class MetricDuration extends GraphiteMetric {
             this.log(logger, "Metric Calculated Duration: " + duration + " seconds.");
         }
 
-        Snapshot snapshot = new Snapshot(baseQueue.concat(".").concat(queueName),
-                                         duration);
+        Snapshot snapshot = new Snapshot(queueName,
+                                         duration).rebaseQueue(run);
 
         ArrayList<Snapshot> snapshots = new ArrayList<Snapshot>();
         snapshots.add(snapshot);

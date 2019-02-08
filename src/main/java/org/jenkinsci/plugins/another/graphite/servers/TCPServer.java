@@ -9,8 +9,8 @@ import java.io.DataOutputStream;
 import hudson.util.FormValidation;
 import hudson.Extension;
 import org.kohsuke.stapler.QueryParameter;
-
 import org.kohsuke.stapler.DataBoundConstructor;
+
 
 public class TCPServer extends Server {
 
@@ -23,14 +23,15 @@ public class TCPServer extends Server {
     }
 
     @Override
-    public void send(@NonNull String queue, @NonNull String value, PrintStream logger) throws UnknownHostException, IOException  {
+    protected void send(@NonNull String queue, @NonNull String value,
+                      @NonNull long timestamp, PrintStream logger) throws UnknownHostException, IOException  {
         Socket conn = new Socket(this.getIp(), Integer.parseInt(this.getPort()));
         
         DataOutputStream dos = new DataOutputStream(conn.getOutputStream());
-        String data = queue + " " + value + " " + (System.currentTimeMillis()/1000) + "\n";
+        String data = queue + " " + value + " " + timestamp + "\n";
 
         if(logger != null){
-            logger.println("SENT DATA: " + data);
+            logger.println("TCP SENT DATA: " + data);
         }
 
         dos.writeBytes(data);

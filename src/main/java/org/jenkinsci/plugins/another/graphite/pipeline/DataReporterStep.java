@@ -27,7 +27,8 @@ public class DataReporterStep extends Step {
     String dataQueue;
     String data;
 
-    @DataBoundConstructor public DataReporterStep(@NonNull List <String> servers,
+    @DataBoundConstructor
+    public DataReporterStep(@NonNull List <String> servers,
                                                   @NonNull String dataQueue,
                                                   @NonNull String data) {
         this.servers = servers;
@@ -35,24 +36,29 @@ public class DataReporterStep extends Step {
         this.data = data;
     }
 
-    @Override public StepExecution start(StepContext context) throws Exception {
+    @Override
+    public StepExecution start(StepContext context) throws Exception {
         return new Execution(this.servers, this.dataQueue, this.data, context);
     }
 
-    @Extension public static final class StepDescriptorImpl extends StepDescriptor {
 
-        @Override public String getFunctionName() {
+    @Extension
+    public static final class StepDescriptorImpl extends StepDescriptor {
+
+        @Override
+        public String getFunctionName() {
             return "graphiteData";
         }
 
-        @Override public String getDisplayName() {
+        @Override
+        public String getDisplayName() {
             return "Report single data to graphite server";
         }
 
-        @Override public Set<? extends Class<?>> getRequiredContext() {
+        @Override
+        public Set<? extends Class<?>> getRequiredContext() {
             return ImmutableSet.of(Run.class, TaskListener.class);
         }
-
     }
 
 
@@ -70,27 +76,30 @@ public class DataReporterStep extends Step {
             this.data = data;
         }
 
-        @Override protected Void run() throws Exception {
+        @Override
+        protected Void run() throws Exception {
             TaskListener listener = getContext().get(TaskListener.class);
             Run run = getContext().get(Run.class);
 
             String baseQueueName = this.getBaseQueueName();
 
-            String queueName = baseQueueName.concat(".").concat(this.dataQueue);
-            GraphiteMetric.Snapshot snapshot = new GraphiteMetric.Snapshot(queueName,
+            GraphiteMetric.Snapshot snapshot = new GraphiteMetric.Snapshot(dataQueue,
                                                                            this.data);
 
+            snapshot.rebaseQueue(run).rebaseQueue(baseQueueName);
+
+            long timestamp = System.currentTimeMillis()/1000;
             for(String serverId : this.serverIds){
                 listener.getLogger().println(serverId);
                 Server server = this.getServerById(serverId);
-                server.send(snapshot, listener.getLogger());
+                server.send(snapshot, timestamp, listener.getLogger());
             }
 
             return null;
         }
 
-
-        @NonNull public Server getServerById(@NonNull String serverId) {
+        @NonNull
+        public Server getServerById(@NonNull String serverId) {
             GlobalConfig globalConfig = GlobalConfiguration.all().get(GlobalConfig.class);
 
             List<Server> servers = globalConfig.getServers();
@@ -102,12 +111,10 @@ public class DataReporterStep extends Step {
             return null;
         }
 
-        @NonNull public String getBaseQueueName() {
+        @NonNull
+        public String getBaseQueueName() {
             GlobalConfig globalConfig = GlobalConfiguration.all().get(GlobalConfig.class);
             return globalConfig.getBaseQueueName();
         }
-
-
     }
-
 }

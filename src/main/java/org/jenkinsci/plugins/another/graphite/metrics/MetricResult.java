@@ -22,7 +22,7 @@ public class MetricResult extends GraphiteMetric {
     }
 
     @Override
-    public List<Snapshot> getSnapshots(@NonNull Run run, @NonNull String baseQueue, PrintStream logger){
+    public List<Snapshot> getSnapshots(@NonNull Run run, PrintStream logger){
         Result result = null;
         String queueName = "result";
 
@@ -35,13 +35,14 @@ public class MetricResult extends GraphiteMetric {
         else{
             result = run.getResult();
         }
-        String fullName = baseQueue.concat(".").concat(queueName).concat(".").concat(result.toString());
-        Snapshot snapshot = new Snapshot(fullName, "1");
+
+        Snapshot snapshot = new Snapshot(result.toString(), "1").rebaseQueue(queueName);
+        snapshot.rebaseQueue(run);
 
         ArrayList<Snapshot> snapshots = new ArrayList<Snapshot>();
         snapshots.add(snapshot);
 
-        this.log(logger, "Metric Result: " + result.toString() + " -> " + snapshot.getValue());
+        this.log(logger, "Metric Result: " + result.toString() + " -> " + snapshot.toString());
 
         return snapshots;
     }
