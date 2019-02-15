@@ -24,21 +24,56 @@ import org.jenkinsci.plugins.another.graphite.GlobalConfig;
 public class DataReporterStep extends Step {
 
     private List<String> servers;
-    String dataQueue;
-    String data;
+    private String dataQueue;
+    private String data;
+    private boolean fail;
 
     @DataBoundConstructor
     public DataReporterStep(@NonNull List <String> servers,
-                                                  @NonNull String dataQueue,
-                                                  @NonNull String data) {
+                            @NonNull String dataQueue,
+                            @NonNull String data,
+                            @NonNull boolean fail) {
         this.servers = servers;
         this.dataQueue = dataQueue;
+        this.data = data;
+        this.fail = fail;
+    }
+
+    public List<String> getServers(){
+        return this.servers;
+    }
+
+    public String getDataQueue(){
+        return this.dataQueue;
+    }
+
+    public String getData(){
+        return this.data;
+    }
+
+    public boolean getFail(){
+        return this.fail;
+    }
+
+    public void setFail(boolean fail){
+        this.fail = fail;
+    }
+
+    public void setServers(List<String> servers){
+        this.servers = servers;
+    }
+
+    public void setDataQueue(String dataQueue){
+        this.dataQueue = dataQueue;
+    }
+
+    public void setData(String data){
         this.data = data;
     }
 
     @Override
     public StepExecution start(StepContext context) throws Exception {
-        return new Execution(this.servers, this.dataQueue, this.data, context);
+        return new Execution(this.servers, this.dataQueue, this.data, fail, context);
     }
 
 
@@ -68,33 +103,45 @@ public class DataReporterStep extends Step {
         private transient final List<String> serverIds;
         private transient final String dataQueue;
         private transient final String data;
+        private transient final boolean fail;
 
-        Execution(List<String> serverIds, String dataQueue, String data, StepContext context) {
+        Execution(List<String> serverIds, String dataQueue, String data, boolean fail, StepContext context) {
             super(context);
             this.serverIds = serverIds;
             this.dataQueue = dataQueue;
             this.data = data;
+            this.fail = fail;
         }
 
         @Override
         protected Void run() throws Exception {
             TaskListener listener = getContext().get(TaskListener.class);
             Run run = getContext().get(Run.class);
+            try{
+                String baseQueueName = this.getBaseQueueName();
 
-            String baseQueueName = this.getBaseQueueName();
+                GraphiteMetric.Snapshot snapshot = new GraphiteMetric.Snapshot(dataQueue,
+                                                                               this.data);
 
-            GraphiteMetric.Snapshot snapshot = new GraphiteMetric.Snapshot(dataQueue,
-                                                                           this.data);
+                snapshot.rebaseQueue(run).rebaseQueue(baseQueueName);
 
-            snapshot.rebaseQueue(run).rebaseQueue(baseQueueName);
-
-            long timestamp = System.currentTimeMillis()/1000;
-            for(String serverId : this.serverIds){
-                listener.getLogger().println(serverId);
-                Server server = this.getServerById(serverId);
-                server.send(snapshot, timestamp, listener.getLogger());
+                long timestamp = System.currentTimeMillis()/1000;
+                for(String serverId : this.serverIds){
+                    listener.getLogger().println(serverId);
+                    Server server = this.getServerById(serverId);
+                    server.send(snapshot, timestamp, listener.getLogger());
+                }
             }
-
+            catch(Exception e){
+                if(this.fail){
+                    listener.getLogger().println("EXCEPTION THROWN: ");
+                    throw e;
+                }
+                else{
+                    listener.getLogger().println("Data could not be sent. Not failing because of the configuration.");
+                    listener.getLogger().println("EXCEPTION THROWN: " + e);
+                }
+            }
             return null;
         }
 

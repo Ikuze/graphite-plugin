@@ -33,10 +33,34 @@ public class MetricReporterStep extends Step {
 
     @DataBoundConstructor
     public MetricReporterStep(@NonNull List <String> servers,
-                                                    @NonNull List <String> metricNames,
-                                                    @NonNull boolean fail) {
+                              @NonNull List <String> metricNames,
+                              @NonNull boolean fail) {
         this.servers = servers;
         this.metricNames = metricNames;
+        this.fail = fail;
+    }
+
+    public List<String> getServers(){
+        return this.servers;
+    }
+
+    public void setServers(List<String> servers){
+        this.servers = servers;
+    }
+
+    public List<String> getMetricNames(){
+        return this.metricNames;
+    }
+
+    public void setMetricNames(List<String> metricNames){
+        this.metricNames = metricNames;
+    }
+
+    public boolean getFail(){
+        return this.fail;
+    }
+
+    public void setFail(boolean fail){
         this.fail = fail;
     }
 
@@ -84,27 +108,38 @@ public class MetricReporterStep extends Step {
         protected Void run() throws Exception {
             TaskListener listener = getContext().get(TaskListener.class);
             Run run = getContext().get(Run.class);
+            try{
 
-            String baseQueueName = this.getBaseQueueName();
+                String baseQueueName = this.getBaseQueueName();
 
-            ArrayList<GraphiteMetric.Snapshot> snapshots = new ArrayList<GraphiteMetric.Snapshot>();
+                ArrayList<GraphiteMetric.Snapshot> snapshots = new ArrayList<GraphiteMetric.Snapshot>();
 
-            for(GraphiteMetric metric : GraphitePlugin.allMetrics){
-                if (metricNames.contains(metric.getName())){
-                    for(GraphiteMetric.Snapshot snapshot : metric.getSnapshots(run,
-                                                                               listener.getLogger())){
-                        snapshots.add(snapshot.rebaseQueue(baseQueueName));
+                for(GraphiteMetric metric : GraphitePlugin.allMetrics){
+                    if (metricNames.contains(metric.getName())){
+                        for(GraphiteMetric.Snapshot snapshot : metric.getSnapshots(run,
+                                                                                   listener.getLogger())){
+                            snapshots.add(snapshot.rebaseQueue(baseQueueName));
+                        }
                     }
                 }
-            }
 
-            long timestamp = System.currentTimeMillis()/1000;
-            for(String serverId : this.serverIds){
-                listener.getLogger().println("Sending data to graphite server: " + serverId);
-                Server server = this.getServerById(serverId);
-                server.send(snapshots, timestamp, listener.getLogger());
+                long timestamp = System.currentTimeMillis()/1000;
+                for(String serverId : this.serverIds){
+                    listener.getLogger().println("Sending data to graphite server: " + serverId);
+                    Server server = this.getServerById(serverId);
+                    server.send(snapshots, timestamp, listener.getLogger());
+                }
             }
-
+            catch(Exception e){
+                if(this.fail){
+                    listener.getLogger().println("EXCEPTION THROWN: ");
+                    throw e;
+                }
+                else{
+                    listener.getLogger().println("Data could not be sent. Not failing because of the configuration.");
+                    listener.getLogger().println("EXCEPTION THROWN: " + e);
+                }
+            }
             return null;
         }
 
