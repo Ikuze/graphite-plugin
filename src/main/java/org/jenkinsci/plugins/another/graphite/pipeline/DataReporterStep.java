@@ -118,12 +118,16 @@ public class DataReporterStep extends Step {
             TaskListener listener = getContext().get(TaskListener.class);
             Run run = getContext().get(Run.class);
             try{
+                //Verify that the user didnt make a mistake inserting the data.
+                // If we dont do that, the data will be sent without any problem but
+                // it will not be shown in graphite, making it harder to find the mistake.
+                Float.parseFloat(this.data);
                 String baseQueueName = this.getBaseQueueName();
 
                 GraphiteMetric.Snapshot snapshot = new GraphiteMetric.Snapshot(dataQueue,
                                                                                this.data);
 
-                snapshot.rebaseQueue(run).rebaseQueue(baseQueueName);
+                snapshot.rebaseQueue(baseQueueName);
 
                 long timestamp = System.currentTimeMillis()/1000;
                 for(String serverId : this.serverIds){
