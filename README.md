@@ -27,6 +27,8 @@ It's pretty straight forward. Remember that the IDs will be used later on to tel
 
 You can select a TCP server or a UDP server.
 
+The base queue name will identify the jenkins server, and will be the prepended to every data queue sent in this jenkins instance.
+
 
 # Pipeline Steps
 
