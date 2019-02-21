@@ -62,7 +62,6 @@ import org.jenkinsci.plugins.another.graphite.servers.Server;
 
     @Override
     public boolean configure(StaplerRequest req, JSONObject formData) throws FormException {
-
         try {
             req.bindJSON(this, formData);
         } catch (Exception e) {
@@ -108,7 +107,6 @@ import org.jenkinsci.plugins.another.graphite.servers.Server;
             return FormValidation.error("Please remove the dot (.) at the end of the string");
         }
         
-        return FormValidation.ok("Base queue name is correctly Configured");
+        return FormValidation.ok("Base queue name is correctly configured");
     }
-
 }

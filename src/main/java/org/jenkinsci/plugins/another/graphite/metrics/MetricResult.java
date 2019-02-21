@@ -15,7 +15,6 @@ import java.util.List;
 @Extension
 public class MetricResult extends GraphiteMetric {
 
-
     @Override
     public String getName(){
         return "result";
@@ -46,5 +45,4 @@ public class MetricResult extends GraphiteMetric {
 
         return snapshots;
     }
-
 }

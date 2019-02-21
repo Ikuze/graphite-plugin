@@ -10,6 +10,7 @@ import java.io.PrintStream;
 
 import hudson.tasks.test.AbstractTestResultAction;
 
+
 @Extension
 public class MetricTests extends GraphiteMetric {
 
@@ -17,7 +18,6 @@ public class MetricTests extends GraphiteMetric {
     public String getName(){
         return "tests";
     }
-
 
     @Override
     public List<Snapshot> getSnapshots(@NonNull Run run, PrintStream logger){

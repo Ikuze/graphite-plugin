@@ -1,4 +1,4 @@
 <?jelly escape-by-default='true'?>
 <div>
-    Plugin to send data to one or several graphite servers.
+    Pipeline steps to send data to graphite servers.
 </div>

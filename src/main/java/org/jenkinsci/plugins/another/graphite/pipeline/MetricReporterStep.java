@@ -108,8 +108,8 @@ public class MetricReporterStep extends Step {
         protected Void run() throws Exception {
             TaskListener listener = getContext().get(TaskListener.class);
             Run run = getContext().get(Run.class);
-            try{
 
+            try{
                 String baseQueueName = this.getBaseQueueName();
 
                 ArrayList<GraphiteMetric.Snapshot> snapshots = new ArrayList<GraphiteMetric.Snapshot>();

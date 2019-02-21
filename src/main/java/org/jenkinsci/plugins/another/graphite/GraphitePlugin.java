@@ -32,6 +32,4 @@ public class GraphitePlugin extends Plugin {
 
         LOGGER.log(Level.FINE, "Extensions registered");
     }
-
-
 }

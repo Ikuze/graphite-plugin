@@ -18,18 +18,12 @@ public class GraphiteValidator {
         return !add.isUnresolved();
     }
 
-
-    /**
-     * @param port
-     * @return whether port is valid
-     */
     public boolean validatePortFormat(String port) {
         Pattern pattern = Pattern.compile(this.portPatern);
         return (pattern.matcher(port).matches() && (Integer.parseInt(port) < 65536));
     }
 
     public boolean isListening(String ip, int port) {
-
         try {
             Socket socket = new Socket();
             socket.connect(new InetSocketAddress(ip, port), 5000);

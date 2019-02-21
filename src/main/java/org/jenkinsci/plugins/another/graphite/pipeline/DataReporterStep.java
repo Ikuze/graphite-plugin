@@ -21,12 +21,14 @@ import org.jenkinsci.plugins.another.graphite.metrics.GraphiteMetric;
 import org.jenkinsci.plugins.another.graphite.servers.Server;
 import org.jenkinsci.plugins.another.graphite.GlobalConfig;
 
+
 public class DataReporterStep extends Step {
 
     private List<String> servers;
     private String dataQueue;
     private String data;
     private boolean fail;
+
 
     @DataBoundConstructor
     public DataReporterStep(@NonNull List <String> servers,

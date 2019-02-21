@@ -5,25 +5,23 @@ import org.jenkinsci.plugins.another.graphite.servers.Server
 
 def f = namespace(lib.FormTagLib);
 
-f.entry(title: _("ID"), field: "id") {
+f.entry(title: _("servers_id"), field: "id") {
     f.textbox()
 }
 
-f.entry(title: _("IP/Host"), field: "ip") {
+f.entry(title: _("servers_ip"), field: "ip") {
     f.textbox()
 }
 
-f.entry(title: _("Port"), field: "port") {
+f.entry(title: _("servers_port"), field: "port") {
     f.textbox()
 }
 
 f.block() {
     f.validateButton(
-            title: _("Test connection"),
-            progress: _("Testing..."),
+            title: _("test_server_connection"),
+            progress: _("testing_server_connection"),
             method: "testConnection",
             with: "ip,port"
     )
 }
-
-

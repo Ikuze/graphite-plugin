@@ -41,5 +41,4 @@ public class MetricDuration extends GraphiteMetric {
 
         return snapshots;
     }
-
 }
